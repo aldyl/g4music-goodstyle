@@ -45,20 +45,33 @@ namespace Music {
 
             var count = (int) (width * _value / logic_rect.width);
             
-            if (_layout.get_alignment () == Pango.Alignment.CENTER && count % 2 != 0)
+            if (count % 2 != 0)
                 count++;
-
+            
             _sbuilder.erase ();
-            
-            var iter = 0;
-            
-            for (; iter < count/2; iter++)
-                _sbuilder.append (_charsL);
+                        
+            if (_layout.get_alignment () == Pango.Alignment.CENTER) {
                 
-            _sbuilder.append (_charsC);
+                var iter = 0;
+            
+                for (; iter < count/2; iter++)
+                    _sbuilder.append (_charsL);
+                
+                _sbuilder.append (_charsC);
 
-            for (; iter < count; iter++)
-                _sbuilder.append (_charsR);
+                for (; iter < count; iter++)
+                    _sbuilder.append (_charsR);
+            
+            }
+
+            else if (_layout.get_alignment () == Pango.Alignment.LEFT) {
+            
+                _sbuilder.append (_charsC);
+
+                for (var i = 0; i < count/2; i++)
+                    _sbuilder.append (_charsR);
+                
+            }
                 
             unowned var text = _sbuilder.str;
             
