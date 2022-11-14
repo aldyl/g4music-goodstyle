@@ -161,7 +161,6 @@ namespace Music {
                 _mpris_id = 0;
             }
 
-            _settings?.set_string ("played-uri", _current_song?.uri ?? "");
             _settings?.set_double ("volume", _player.volume);
 
             _song_store.save_tag_cache_async.begin ((obj, res) => {
@@ -210,8 +209,10 @@ namespace Music {
                 if (_current_song != value) {
                     _current_song = value;
                     _player.uri = value?.uri;
-                    if (value != null)
+                    if (value != null) {
                         song_changed ((!)value);
+                        _settings?.set_string ("played-uri", ((!)value).uri);
+                    }
                 }
             }
         }
@@ -281,7 +282,8 @@ namespace Music {
         }
 
         public void play_next () {
-            current_item = current_item + 1;
+            current_item++;
+            _player.play ();
         }
 
         public void play_pause() {
@@ -289,7 +291,8 @@ namespace Music {
         }
 
         public void play_previous () {
-            current_item = current_item - 1;
+            current_item--;
+            _player.play ();
         }
 
         public void reload_song_store () {
@@ -399,20 +402,39 @@ namespace Music {
 
         public void show_about () {
             string[] authors = { "Nanling" };
+            var app_name = _("G4Music");
+            var comments = _("A fast, fluent, light weight music player written in GTK4.");
+            /* Translators: Replace "translator-credits" with your names, one name per line */
+            var translator_credits = _("translator-credits");
+            var website = "https://gitlab.gnome.org/neithern/g4music";
+#if HAS_ADW_ABOUT
+            var win = new Adw.AboutWindow ();
+            win.application_icon = application_id;
+            win.application_name = app_name;
+            win.version = Config.VERSION;
+            win.comments = comments;
+            win.license_type = Gtk.License.GPL_3_0;
+            win.developers = authors;
+            win.website = website;
+            win.issue_url = "https://gitlab.gnome.org/neithern/g4music/issues";
+            win.translator_credits = translator_credits;
+            win.transient_for = active_window;
+            win.present ();
+#else
             Gtk.show_about_dialog (active_window,
                                    "logo-icon-name", application_id,
-                                   "program-name", _("G4Music"),
+                                   "program-name", app_name,
                                    "version", Config.VERSION,
+                                   "comments", comments,
                                    "authors", authors,
-                                   /* Translators: Replace "translator-credits" with your names, one name per line */
-                                   "translator-credits", _("translator-credits"),
+                                   "translator-credits", translator_credits,
                                    "license-type", Gtk.License.GPL_3_0,
-                                   "comments", _("A fast, fluent, light weight music player written in GTK4.")
+                                   "website", website
                                   );
+#endif
         }
 
         public void show_preferences () {
-            activate ();
             var win = new PreferencesWindow (this);
             win.destroy_with_parent = true;
             win.transient_for = active_window;
