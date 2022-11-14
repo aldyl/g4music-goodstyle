@@ -1,7 +1,9 @@
 namespace Music {
 
     public class PeakBar : Gtk.Box {
-        private string _chars = "=";
+    	private string _charsC = "⚝";
+        private string _charsL = "⚞";
+        private string _charsR = "⚟";
         private Pango.FontDescription _font = new Pango.FontDescription ();
         private StringBuilder _sbuilder = new StringBuilder ();
         private double _value = 0;
@@ -37,27 +39,43 @@ namespace Music {
             _layout.set_height (height * Pango.SCALE);
 
             Pango.Rectangle ink_rect, logic_rect;
-            _layout.set_text (_chars, _chars.length);
+            
+            _layout.set_text (_charsC, _charsC.length);
             _layout.get_pixel_extents (out ink_rect, out logic_rect);
 
             var count = (int) (width * _value / logic_rect.width);
-            if (_layout.get_alignment () == Pango.Alignment.CENTER && count % 2 == 0)
-                count--;
+            
+            if (_layout.get_alignment () == Pango.Alignment.CENTER && count % 2 != 0)
+                count++;
 
             _sbuilder.erase ();
-            for (var i = 0; i < count; i++)
-                _sbuilder.append (_chars);
+            
+            var iter = 0;
+            
+            for (; iter < count/2; iter++)
+                _sbuilder.append (_charsL);
+                
+            _sbuilder.append (_charsC);
+
+            for (; iter < count; iter++)
+                _sbuilder.append (_charsR);
+                
             unowned var text = _sbuilder.str;
+            
             _layout.set_text (text, text.length);
 
             var style = get_style_context ();
             var color = style.get_color ();
 
             var pt = Graphene.Point ();
+            
             pt.x = 0;
             pt.y = - ink_rect.y + (height - ink_rect.height) * 0.5f;
+            
+                    
             snapshot.translate (pt);
             snapshot.append_layout (_layout, color);
+            
             pt.y = - pt.y;
             snapshot.translate (pt);
         }
