@@ -16,8 +16,10 @@
     <content_rating type="oars-1.1"/>
 
     <description>
-      	<p>A fast, fluent, light weight music player written in GTK4, with a beautiful, adaptive user interface, so named G4Music. It is also focusing on high performance, for those people who has large number of songs.
-        </p>
+      	<p>A fast, fluent, light weight music player written in GTK4,
+         with a beautiful, adaptive user interface, so named G4Music.
+         It is also focusing on high performance, for those people who
+         has large number of songs.</p>
     </description>
 
     <screenshots>
@@ -35,180 +37,180 @@
     <releases>
         <release version="1.8" date="2022-10-19">
             <description>
-                <ul>
-                <li>Build flatpak with GNOME 43.</li>
-                <li>Cache directories for faster loading.</li>
-                <li>Show peaks more smoothly.</li>
-                <li>Update Spanish and German translation, thanks to the translators.</li>
-                <li>v1.8.2: Build with vala 0.54.</li>
-                </ul>
+                <p>
+                -Build flatpak with GNOME 43.
+                -Cache directories for faster loading.
+                -Show peaks more smoothly.
+                -Update Spanish and German translation, thanks to the translators.
+                -v1.8.2: Build with vala 0.54.
+                </p>
             </description>
         </release>
         <release version="1.7" date="2022-10-02">
             <description>
                 <ul>
-                <li>Start to play when music changed.</li>
-                <li>Optimize audio peaks visualizer.</li>
-                <li>New style of popover menu.</li>
-                <li>Update many translation, thanks to the translators.</li>
+                -Start to play when music changed.
+                -Optimize audio peaks visualizer.
+                -New style of popover menu.
+                -Update many translation, thanks to the translators.
                 </ul>
             </description>
         </release>
         <release version="1.6" date="2022-08-06">
             <description>
                 <p>
-                ==>Option: Background blur mode.
-                ==>Shortcut key for toggle sort.
-                ==>Don't changing current song when searching.
-                ==>Add Estonian translation, thanks to Henri.
-                ==>Add Traditional Chinese translation, thanks to Julian.
-                ==>v1.6.1: Fix wrong sort order of cached tags.
+                -Option: Background blur mode.
+                -Shortcut key for toggle sort.
+                -Don't changing current song when searching.
+                -Add Estonian translation, thanks to Henri.
+                -Add Traditional Chinese translation, thanks to Julian.
+                -v1.6.1: Fix wrong sort order of cached tags.
                 </p>
             </description>
         </release>
         <release version="1.5" date="2022-07-31">
             <description>
                 <p>
-                ==>Show loading songs progress with percent.
-                ==>Add sort by recently added, thanks to Mek101.
-                ==>Add German translation, thanks to Jürgen Benvenuti.
-                ==>Bug fix and UI improvement.
+                -Show loading songs progress with percent.
+                -Add sort by recently added, thanks to Mek101.
+                -Add German translation, thanks to Jürgen Benvenuti.
+                -Bug fix and UI improvement.
                 </p>
             </description>
         </release>
         <release version="1.4" date="2022-07-23">
             <description>
                 <p>
-                ==>Popover menu for song entry.
-                ==>Show initial status if no sound found.
-                ==>Try parse album and track from file path.
-                ==>Add Italian translation, thanks to Albano Aattistella.
+                -Popover menu for song entry.
+                -Show initial status if no sound found.
+                -Try parse album and track from file path.
+                -Add Italian translation, thanks to Albano Aattistella.
                 </p>
             </description>
         </release>
         <release version="1.3" date="2022-07-17">
             <description>
                 <p>
-                ==>App inhibit suspend to keep playing.
-                ==>Performance improvement and memory saving.
-                ==>Parse tags of MKV/MKA.
-                ==>Add French translation, thanks to Aurélien Hamy.
-                ==>Add Dutch translation, thanks to Heimen Stoffels.
+                -App inhibit suspend to keep playing.
+                -Performance improvement and memory saving.
+                -Parse tags of MKV/MKA.
+                -Add French translation, thanks to Aurélien Hamy.
+                -Add Dutch translation, thanks to Heimen Stoffels.
                 </p>
             </description>
         </release>
         <release version="1.2" date="2022-07-01">
             <description>
                 <p>
-                ==>Faster parsing OGG and MP4 tags.
-                ==>Faster drawing texts using pango.
-                ==>Many UI optimizations.
-                ==>Add Brazilian Portuguese translation, thanks to @PedroHSilva.
+                -Faster parsing OGG and MP4 tags.
+                -Faster drawing texts using pango.
+                -Many UI optimizations.
+                -Add Brazilian Portuguese translation, thanks to @PedroHSilva.
                 </p>
             </description>
         </release>
         <release version="1.1" date="2022-06-25">
             <description>
                 <p>
-                ==>Option: Gapless playback.
-                ==>Make label clickable instead of hypelinks.
-                ==>Add Turkish translation, thanks to @Sabri Ünal.
-                ==>Fix cover image issues.
-                ==>Fix saveing tag cache issues.
+                -Option: Gapless playback.
+                -Make label clickable instead of hypelinks.
+                -Add Turkish translation, thanks to @Sabri Ünal.
+                -Fix cover image issues.
+                -Fix saveing tag cache issues.
                 </p>
             </description>
         </release>
         <release version="1.0" date="2022-06-23">
             <description>
                 <p>
-                ==>Support ReplayGain to normalize volume.
-                ==>Option: Keep playing after window closed.
-                ==>Cache tags to make next loading faster.
-                ==>Share album cover with same artist.
-                ==>Fix some UI issues.
-                ==>v1.0.1: Updated Russian translation.
+                -Support ReplayGain to normalize volume.
+                -Option: Keep playing after window closed.
+                -Cache tags to make next loading faster.
+                -Share album cover with same artist.
+                -Fix some UI issues.
+                -v1.0.1: Updated Russian translation.
                 </p>
             </description>
         </release>
         <release version="0.9" date="2022-06-20">
             <description>
                 <p>
-                ==>Scale album cover to fix large window.
-                ==>Navigate back if start search and folded.
-                ==>Draw peak to avoid resizing the window.
-                ==>Request host file permisson in flatpak.
+                -Scale album cover to fix large window.
+                -Navigate back if start search and folded.
+                -Draw peak to avoid resizing the window.
+                -Request host file permisson in flatpak.
                 </p>
             </description>
         </release>
         <release version="0.8" date="2022-06-18">
             <description>
                 <p>
-                ==>Show current song in Files.
-                ==>Sort by track number in an album.
-                ==>Sort text by prefix number.
-                ==>Always follow sym-links when enumerate a folder.
-                ==>Add spanish translation, thanks to @Radi4Ever.
+                -Show current song in Files.
+                -Sort by track number in an album.
+                -Sort text by prefix number.
+                -Always follow sym-links when enumerate a folder.
+                -Add spanish translation, thanks to @Radi4Ever.
                 </p>
             </description>
         </release>
         <release version="0.7" date="2022-06-16">
             <description>
                 <p>
-                ==>Parallel parsing tags to make loading songs even faster.
-                ==>Merge all kinds of tags as possible.
-                ==>Fix crash when parsing some FLAC files, thanks to @GeoffreyCoulaud.
+                -Parallel parsing tags to make loading songs even faster.
+                -Merge all kinds of tags as possible.
+                -Fix crash when parsing some FLAC files, thanks to @GeoffreyCoulaud.
                 </p>
             </description>
         </release>
         <release version="0.6" date="2022-06-15">
             <description>
                 <p>
-                ==>Use Adw.Leaflet to adapt to PC and phone screens.
-                ==>Show a mini play bar when only the playlist on the window.
-                ==>Show a spinner when loading songs.
-                ==>Save and restore the window size.
-                ==>Add Swedish translation, thanks to Åke Engelbrektson.
-                ==>Faster parsing FLAC tags.
+                -Use Adw.Leaflet to adapt to PC and phone screens.
+                -Show a mini play bar when only the playlist on the window.
+                -Show a spinner when loading songs.
+                -Save and restore the window size.
+                -Add Swedish translation, thanks to Åke Engelbrektson.
+                -Faster parsing FLAC tags.
                 </p>
             </description>
         </release>
         <release version="0.5" date="2022-06-13">
             <description>
                 <p>
-                ==>Detect music file type to fix incorrect parsing.
-                ==>Update app icon to follow GNOME HIG, thanks to @daudix-UFO.
-                ==>Add Russian translation, thanks to @daudix-UFO.
-                ==>Change "Force Dark" to "Prefer Dark".
+                -Detect music file type to fix incorrect parsing.
+                -Update app icon to follow GNOME HIG, thanks to @daudix-UFO.
+                -Add Russian translation, thanks to @daudix-UFO.
+                -Change "Force Dark" to "Prefer Dark".
                 </p>
             </description>
         </release>
         <release version="0.4" date="2022-06-12">
             <description>
                 <p>
-                ==>Recognize external images as cover art, supports transparency.
-                ==>Showing peak now works with pipewire in flatpak.
-                ==>Don't support tracker_sparql because it is slow.
+                -Recognize external images as cover art, supports transparency.
+                -Showing peak now works with pipewire in flatpak.
+                -Don't support tracker_sparql because it is slow.
                 </p>
             </description>
         </release>
         <release version="0.3" date="2022-06-11">
             <description>
                 <p>
-                ==>Sort songs by Album/Artist/Title.
-                ==>Option: Force dark theme.
-                ==>Optimized for responsiveness.
+                -Sort songs by Album/Artist/Title.
+                -Option: Force dark theme.
+                -Optimized for responsiveness.
                 </p>
             </description>
         </release>
         <release version="0.2" date="2022-06-10">
             <description>
                 <p>
-                ==>Add volume button.
-                ==>Repeat singl song mode.
-                ==>Supports pipewire for flatpak.
-                ==>Supports parsing GIO file tags for flatpak.
-                ==>Press any key to search, ESC to quit search.
-                ==>Show abbreviation as MPRIS's cover if no cover image.
+                -Add volume button.
+                -Repeat singl song mode.
+                -Supports pipewire for flatpak.
+                -Supports parsing GIO file tags for flatpak.
+                -Press any key to search, ESC to quit search.
+                -Show abbreviation as MPRIS's cover if no cover image.
                 </p>
             </description>
         </release>
