@@ -2,9 +2,9 @@ Source: g4music-goodstyle
 Section: music
 Priority: optional
 Maintainer: Ghost <ghost@uci.cu>
-Build-Depends: debhelper-compat (= 13), libadwaita-1-dev, libgstreamer-plugins-base1.0-dev, libgstreamer1.0-dev, valac, meson
+Build-Depends: debhelper-compat (= 13), libadwaita-1-dev, libgstreamer-plugins-base1.0-dev, libgstreamer1.0-dev, valac, meson, desktop-file-utils
 Standards-Version: 4.6.0
-#Vcs-Browser: https://salsa.debian.org/debian/g4music-goodstyle
+Vcs-Browser: https://github.com/aldyl/g4music-goodstyle.git
 Rules-Requires-Root: no
 
 Package: g4music-goodstyle
