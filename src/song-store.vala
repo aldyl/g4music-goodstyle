@@ -9,6 +9,15 @@ namespace Music {
     }
 
     public class SongStore : Object {
+        private static ThreadPool<DirCache>? _save_dir_pool;
+
+        static construct {
+            try {
+                _save_dir_pool = new ThreadPool<DirCache>.with_owned_data ((cache) => cache.save (), 1, false);
+            } catch (Error e) {
+            }
+        }
+
         private SortMode _sort_mode = SortMode.TITLE;
         private CompareDataFunc<Object> _compare = Song.compare_by_title;
         private ListStore _store = new ListStore (typeof (Song));
@@ -86,59 +95,53 @@ namespace Music {
         }
 
         public async void add_files_async (File[] files) {
-            var arr = new GenericArray<Object> (4096);
+            var songs = new GenericArray<Object> (4096);
             yield run_async<void> (() => {
                 var begin_time = get_monotonic_time ();
                 foreach (var file in files) {
-                    add_file (file, arr);
+                    add_file (file, songs);
                 }
 
                 var queue = new AsyncQueue<Song?> ();
-                for (var i = 0; i < arr.length; i++) {
-                    var song = (Song) arr[i];
+                for (var i = 0; i < songs.length; i++) {
+                    var song = (Song) songs[i];
                     var cached_song = _tag_cache[song.uri];
                     if (cached_song != null && ((!)cached_song).modified_time == song.modified_time)
-                        arr[i] = (!)cached_song;
+                        songs[i] = (!)cached_song;
                     else
                         queue.push (song);
                 }
                 var queue_count = queue.length ();
                 if (queue_count > 0) {
-                    var num_thread = uint.min (queue_count, get_num_processors ());
-                    var threads = new Thread<void>[num_thread];
                     int percent = -1;
                     uint progress = 0;
-                    for (var i = 0; i < num_thread; i++) {
-                        threads[i] = new Thread<void> (@"thread$(i)", () => {
-                            Song? s;
-                            while ((s = queue.try_pop ()) != null) {
-                                var song = (!)s;
-                                parse_song_tags (song);
-                                _tag_cache.add (song);
-                                var per = (int) AtomicUint.add (ref progress, 1) * 100 / queue_count;
-                                if (percent != per) {
-                                    percent = per;
-                                    Idle.add (() => {
-                                        parse_progress (per);
-                                        return false;
-                                    });
-                                }
+                    var num_tasks = uint.min (queue_count, get_num_processors ());
+                    run_in_threads<void> ((index) => {
+                        Song? s;
+                        while ((s = queue.try_pop ()) != null) {
+                            var song = (!)s;
+                            song.parse_tags ();
+                            _tag_cache.add (song);
+                            var per = (int) AtomicUint.add (ref progress, 1) * 100 / queue_count;
+                            if (percent != per) {
+                                percent = per;
+                                Idle.add (() => {
+                                    parse_progress (per);
+                                    return false;
+                                });
                             }
-                        });
-                    }
-                    foreach (var thread in threads) {
-                        thread.join ();
-                    }
+                        }
+                    }, num_tasks);
                 }
 
                 if (_sort_mode == SortMode.SHUFFLE) {
-                    Song.shuffle_order (arr);
+                    Song.shuffle_order (songs);
                 }
-                arr.sort ((CompareFunc<Object>) _compare);
-                print ("Found %u songs in %g seconds\n", arr.length,
+                songs.sort ((CompareFunc<Object>) _compare);
+                print ("Found %u songs in %g seconds\n", songs.length,
                         (get_monotonic_time () - begin_time) / 1e6);
             });
-            _store.splice (_store.get_n_items (), 0, arr.data);
+            _store.splice (_store.get_n_items (), 0, songs.data);
 
             if (_tag_cache.modified) {
                 save_tag_cache_async.begin ((obj, res) => {
@@ -147,125 +150,77 @@ namespace Music {
             }
         }
 
-        private static void add_file (File file, GenericArray<Object> arr) {
+        private const string ATTRIBUTES = FileAttribute.STANDARD_CONTENT_TYPE + ","
+                                        + FileAttribute.STANDARD_IS_HIDDEN + ","
+                                        + FileAttribute.STANDARD_NAME + ","
+                                        + FileAttribute.STANDARD_TYPE + ","
+                                        + FileAttribute.TIME_MODIFIED;
+
+        private static void add_file (File file, GenericArray<Object> songs) {
             try {
-                var info = file.query_info ("standard::*,time::modified", FileQueryInfoFlags.NONE);
+                var info = file.query_info (ATTRIBUTES, FileQueryInfoFlags.NONE);
                 if (info.get_file_type () == FileType.DIRECTORY) {
                     var stack = new Queue<File> ();
-                    stack.push_tail (file);
+                    stack.push_head (file);
                     while (stack.length > 0) {
-                        add_directory (stack, arr);
+                        var dir = stack.pop_head ();
+                        add_directory (dir, stack, songs);
                     }
                 } else {
-                    var parent = file.get_parent ();
-                    var base_uri = parent != null ? get_uri_with_end_sep ((!)parent) : "";
-                    var song = new_song_from_info (base_uri, info);
+                    var song = Song.from_info (file, info);
                     if (song != null)
-                        arr.add ((!)song);
+                        songs.add ((!)song);
                 }
             } catch (Error e) {
                 warning ("Query %s: %s\n", file.get_parse_name (), e.message);
             }
         }
 
-        private static void add_directory (Queue<File> stack, GenericArray<Object> arr) {
-            var dir = stack.pop_tail ();
+        private static void add_directory (File dir, Queue<File> stack, GenericArray<Object> songs) {
+            var cache = new DirCache (dir);
+            if (cache.check_valid () && cache.load (stack, songs)) {
+                return;
+            }
+
             try {
-                var base_uri = get_uri_with_end_sep (dir);
-                FileInfo? info = null;
-                var enumerator = dir.enumerate_children ("standard::*,time::modified", FileQueryInfoFlags.NONE);
-                while ((info = enumerator.next_file ()) != null) {
-                    var pi = (!)info;
-                    if (pi.get_is_hidden ()) {
+                FileInfo? pi = null;
+                var enumerator = dir.enumerate_children (ATTRIBUTES, FileQueryInfoFlags.NONE);
+                while ((pi = enumerator.next_file ()) != null) {
+                    var info = (!)pi;
+                    if (info.get_is_hidden ()) {
                         continue;
-                    } else if (pi.get_file_type () == FileType.DIRECTORY) {
-                        var sub_dir = dir.resolve_relative_path (pi.get_name ());
-                        stack.push_tail (sub_dir);
+                    } else if (info.get_file_type () == FileType.DIRECTORY) {
+                        var child = dir.get_child (info.get_name ());
+                        stack.push_head (child);
+                        cache.add_child (info);
                     } else {
-                        var song = new_song_from_info (base_uri, pi);
-                        if (song != null)
-                            arr.add ((!)song);
+                        var file = dir.get_child (info.get_name ());
+                        var song = Song.from_info (file, info);
+                        if (song != null) {
+                            songs.add ((!)song);
+                            cache.add_child (info);
+                        }
                     }
                 }
+                _save_dir_pool?.add (cache);
             } catch (Error e) {
                 warning ("Enumerate %s: %s\n", dir.get_parse_name (), e.message);
             }
         }
 
-        private static Song? new_song_from_info (string base_uri, FileInfo info) {
-            unowned var type = info.get_content_type ();
-            if (type != null && ContentType.is_mime_type ((!)type, "audio/*") && !((!)type).has_suffix ("url")) {
-                unowned var name = info.get_name ();
-                var song = new Song ();
-                // build same file uri as tracker sparql
-                song.uri = base_uri + Uri.escape_string (name, null, false);
-                song.title = name;
-                song.modified_time = info.get_modification_date_time ()?.to_unix () ?? 0;
-                return song;
+        private delegate G ThreadFunc<G> (uint index);
+
+        private static void run_in_threads<G> (owned ThreadFunc<G> func, uint num_tasks) {
+            var threads = new Thread<G>[num_tasks];
+            for (var i = 0; i < num_tasks; i++) {
+                var index = i;
+                threads[i] = new Thread<G> (null, () => {
+                    return func (index);
+                });
             }
-            return null;
-        }
-
-        private static void parse_song_tags (Song song) {
-            var file = File.new_for_uri (song.uri);
-            var name = song.title;
-            song.title = "";
-
-            if (file.is_native ()) {
-                var tags = parse_gst_tags (file);
-                if (tags != null)
-                    song.from_gst_tags ((!)tags);
+            foreach (var thread in threads) {
+                thread.join ();
             }
-
-            if (song.title.length == 0 || song.artist.length == 0) {
-                //  guess tags from the file name
-                var end = name.last_index_of_char ('.');
-                if (end > 0) {
-                    name = name.substring (0, end);
-                }
-
-                int track = 0;
-                var pos = name.index_of_char ('.');
-                if (pos > 0) {
-                    // assume prefix number as track index
-                    int.try_parse (name.substring (0, pos), out track, null, 10);
-                    name = name.substring (pos + 1);
-                }
-
-                //  split the file name by '-'
-                var sa = split_string (name, "-");
-                var len = sa.length;
-                if (song.title.length == 0) {
-                    song.title = len >= 1 ? sa[len - 1] : name;
-                    song.update_title_key ();
-                }
-                if (song.artist.length == 0) {
-                    song.artist = len >= 2 ? sa[len - 2] : UNKOWN_ARTIST;
-                    song.update_artist_key ();
-                }
-                if (song.track == UNKOWN_TRACK) {
-                    if (track == 0 && len >= 3)
-                        int.try_parse (sa[0], out track, null, 10);
-                    if (track > 0)
-                        song.track = track;
-                }
-            }
-            if (song.album.length == 0) {
-                //  assume folder name as the album
-                song.album = file.get_parent ()?.get_basename () ?? UNKOWN_ALBUM;
-                song.update_album_key ();
-            }
-        }
-
-        private static GenericArray<string> split_string (string text, string delimiter) {
-            var ar = text.split ("-");
-            var sa = new GenericArray<string> (ar.length);
-            foreach (var str in ar) {
-                var s = str.strip ();
-                if (s.length > 0)
-                    sa.add (s);
-            }
-            return sa;
         }
     }
 }
