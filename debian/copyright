@@ -1,14 +1,14 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: g4music-goodstyle
-Upstream-Contact: ghost@gmail.com
+Upstream-Contact: Aldy <aldyleongarcia@ggmail.com>
 Source: https://github.com/aldyl/g4music-goodstyle
 
 Files: *
-Copyright: 2022 ghost@uci.cu
-           2020-2022 othe@uci.cu
+Copyright: 2022 Aldy <aldyleongarcia@ggmail.com>
+           2020 Aldy <aldyleongarcia@ggmail.com>
 
 Files: debian/*
-Copyright: 2022 Ghost <ghost@unknown>
+Copyright: 2022 Aldy <aldyleongarcia@ggmail.com>
 License: GPL-2+
  This package is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by

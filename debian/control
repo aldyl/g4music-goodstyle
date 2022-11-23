@@ -1,7 +1,7 @@
 Source: g4music-goodstyle
-Section: music
+Section: libdevel
 Priority: optional
-Maintainer: Ghost <ghost@uci.cu>
+Maintainer: Aldy <aldyleongarcia@ggmail.com>
 Build-Depends: debhelper-compat (= 13), libadwaita-1-dev, libgstreamer-plugins-base1.0-dev, libgstreamer1.0-dev, valac, meson, desktop-file-utils
 Standards-Version: 4.6.0
 Vcs-Browser: https://github.com/aldyl/g4music-goodstyle.git
@@ -10,16 +10,6 @@ Rules-Requires-Root: no
 Package: g4music-goodstyle
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: A fast, fluent, light weight music player written in GTK4
- - Supports most music file types, samba and any other remote protocols (thanks to great GIO and GStreamer).
- - Fast loading and parsing thousands of music files in very few seconds.
- - Low memory usage for huge playlist with album covers, no thumbnail caches to store.
- - Sorts by album/artist/title or shuffle, supports full-text searching.
- - Supports embedded album art or external images as album cover, embedded can be exported.
- - Gaussian blurred cover as window background, follows GNOME 42 light/dark mode.
- - Supports drag-drop from GNOME Files, showing music in Files.
- - Supports audio peaks visualizer.
- - Supports gapless playback.
- - Supports ReplayGain track mode.
- - Supports pipewire audio sink.
- - Supports MPRIS control.
+Description: A fast, fluent, light weight music player
+ Supports most music file types, samba and any other
+ remote protocols (thanks to great GIO and GStreamer).
