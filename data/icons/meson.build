@@ -1,7 +1,7 @@
 scalable_dir = join_paths('hicolor', 'scalable', 'apps')
 scalable_conf = configure_file(
   input: join_paths(scalable_dir, 'app.svg'),
-  output: '@0@.svg'.format(app_id),
+  output: '@0@.svg'.format(app_id.replace('.','-')),
   configuration: conf
 )
 
@@ -13,7 +13,7 @@ install_data(
 symbolic_dir = join_paths('hicolor', 'symbolic', 'apps')
 symbolic_conf = configure_file(
   input: join_paths(symbolic_dir, 'app-symbolic.svg'),
-  output: '@0@-symbolic.svg'.format(app_id),
+  output: '@0@-symbolic.svg'.format(app_id.replace('.','-')),
   configuration: conf
 )
 
